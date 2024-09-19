@@ -172,3 +172,30 @@ fn float_conversion() {
     );
     assert_eq!(Approximint::approximate(1.0e100), Approximint::one_e(100));
 }
+
+#[test]
+fn limits() {
+    assert_eq!(
+        Approximint::new(999_999_999) * Approximint::one_e(u32::MAX),
+        Approximint::MAX
+    );
+    assert_eq!(
+        Approximint::new(-999_999_999) * Approximint::one_e(u32::MAX),
+        Approximint::MIN
+    );
+    assert_eq!(
+        (Approximint::new(999_999_999) * Approximint::one_e(u32::MAX)).to_string(),
+        "9.999e4294967303"
+    );
+    assert_eq!(
+        (Approximint::new(-999_999_999) * Approximint::one_e(u32::MAX)).to_string(),
+        "-9.999e4294967303"
+    );
+    // Operations are saturating.
+    assert_eq!(Approximint::MAX * Approximint::new(2), Approximint::MAX);
+    assert_eq!(Approximint::MIN * Approximint::new(2), Approximint::MIN);
+    assert_eq!(Approximint::MIN - Approximint::MAX, Approximint::MIN);
+    assert_eq!(Approximint::MIN + Approximint::MIN, Approximint::MIN);
+    assert_eq!(Approximint::MAX + Approximint::MAX, Approximint::MAX);
+    assert_eq!(Approximint::MAX - Approximint::MIN, Approximint::MAX);
+}

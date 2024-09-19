@@ -13,7 +13,7 @@ extern crate std;
 /// This type supports representing integers in a form of `coefficient *
 /// 10^exponent`. The coefficient has a range of `-999_999_999..=999_999_999`,
 /// and the maximum exponent is `u32::MAX`. This approach supports a range of
-/// `-9.999_999_99e4,294,967,295..=9.999_999_99e4,294,967,295` while retaining 9
+/// `-9.999_999_99e4_294_967_303..=9.999_999_99e4_294_967_303` while retaining 9
 /// digits of precision.
 #[derive(Debug, Clone, Copy, Eq, PartialEq, PartialOrd, Ord, Default)]
 pub struct Approximint {
@@ -23,6 +23,14 @@ pub struct Approximint {
 
 impl Approximint {
     const COEFFICIENT_LIMIT: i32 = 1_000_000_000;
+    pub const MAX: Self = Self {
+        ten_power: u32::MAX,
+        coefficient: 999_999_999,
+    };
+    pub const MIN: Self = Self {
+        ten_power: u32::MAX,
+        coefficient: -999_999_999,
+    };
     /// A value representing 1.
     pub const ONE: Self = Self {
         ten_power: 0,
@@ -73,7 +81,7 @@ impl Approximint {
                 self.ten_power -= 1;
             }
         } else if self.coefficient < 0 {
-            while self.ten_power > 0 && self.coefficient < -100_000_000 {
+            while self.ten_power > 0 && self.coefficient > -100_000_000 {
                 self.coefficient *= 10;
                 self.ten_power -= 1;
             }
@@ -86,8 +94,12 @@ impl Approximint {
         if self.coefficient >= Self::COEFFICIENT_LIMIT
             || self.coefficient <= -Self::COEFFICIENT_LIMIT
         {
-            self.ten_power += 1;
-            self.coefficient /= 10;
+            if let Some(next_power) = self.ten_power.checked_add(1) {
+                self.ten_power = next_power;
+                self.coefficient /= 10;
+            } else {
+                self.coefficient = self.coefficient.signum() * 999_999_999;
+            }
         }
         self
     }
@@ -199,12 +211,22 @@ impl Mul for Approximint {
         let mut coefficient = i64::from(self.coefficient) * i64::from(rhs.coefficient);
         let mut ten_power = self.ten_power + rhs.ten_power;
         while coefficient >= i64::from(Self::COEFFICIENT_LIMIT) {
-            ten_power += 1;
-            coefficient /= 10;
+            if let Some(next_power) = ten_power.checked_add(1) {
+                ten_power = next_power;
+                coefficient /= 10;
+            } else {
+                coefficient = 999_999_999;
+                break;
+            }
         }
         while coefficient <= i64::from(-Self::COEFFICIENT_LIMIT) {
-            ten_power += 1;
-            coefficient /= 10;
+            if let Some(next_power) = ten_power.checked_add(1) {
+                ten_power = next_power;
+                coefficient /= 10;
+            } else {
+                coefficient = -999_999_999;
+                break;
+            }
         }
         Self {
             coefficient: coefficient as i32,
@@ -346,7 +368,7 @@ impl Display for ScientificFormatter {
 #[derive(Debug, Copy, Clone)]
 struct ScientificInfo {
     digits: DigitRing,
-    exponent: u32,
+    exponent: u64,
     negative: bool,
 }
 
@@ -367,7 +389,7 @@ impl ScientificInfo {
             exponent += 1;
         }
 
-        let exponent = exponent - 1 + num.ten_power;
+        let exponent = exponent - 1 + u64::from(num.ten_power);
         Self {
             digits,
             exponent,
@@ -654,10 +676,10 @@ impl<'a> WordFormatter<'a> {
         }
         self.format_words(info.exponent, f, |f, exponent| {
             let digits_per_separator = usize::from(self.decimal.digits_per_separator);
-            let separator_offset =
-                digits_per_separator - 1 - exponent as usize % digits_per_separator;
-            for (index, digit) in info.digits.iter().take(exponent as usize + 2).enumerate() {
-                if index == exponent as usize + 1 {
+            let exponent_usize = usize::try_from(exponent).expect("exponent too large for usize");
+            let separator_offset = digits_per_separator - 1 - exponent_usize % digits_per_separator;
+            for (index, digit) in info.digits.iter().take(exponent_usize + 2).enumerate() {
+                if index == exponent_usize + 1 {
                     if digit == b'0' {
                         break;
                     }
@@ -673,9 +695,9 @@ impl<'a> WordFormatter<'a> {
 
     fn format_words(
         &self,
-        exponent: u32,
+        exponent: u64,
         f: &mut core::fmt::Formatter<'_>,
-        format_exponent: impl FnOnce(&mut core::fmt::Formatter<'_>, u32) -> core::fmt::Result,
+        format_exponent: impl FnOnce(&mut core::fmt::Formatter<'_>, u64) -> core::fmt::Result,
     ) -> core::fmt::Result {
         // info treats the leading digit as significant, but for the purpose of
         // this function we need to treat exponent as a count of digits.
@@ -683,12 +705,12 @@ impl<'a> WordFormatter<'a> {
             .words
             .windows(2)
             .skip_while(|words| words[0].0 < self.decimal_before)
-            .find(|words| words[0].0 <= exponent && words[1].0 > exponent)
+            .find(|words| u64::from(words[0].0) <= exponent && u64::from(words[1].0) > exponent)
             .map_or_else(
                 || self.words.last().expect("at least one word"),
                 |words| &words[0],
             );
-        let Some(exponent) = exponent.checked_sub(word.0) else {
+        let Some(exponent) = exponent.checked_sub(u64::from(word.0)) else {
             return format_exponent(f, exponent);
         };
 
@@ -696,7 +718,7 @@ impl<'a> WordFormatter<'a> {
             todo!("round");
         }
 
-        if exponent < self.decimal_before {
+        if exponent < u64::from(self.decimal_before) {
             format_exponent(f, exponent)?;
         } else {
             self.format_words(exponent, f, format_exponent)?;
@@ -773,7 +795,7 @@ impl Display for DecimalFormatter {
         }
 
         let digits_per_separator = usize::from(self.digits_per_separator);
-        let exponent_usize = info.exponent as usize;
+        let exponent_usize = usize::try_from(info.exponent).expect("exponent too large for usize");
         let separator_offset = if digits_per_separator > 0 {
             digits_per_separator - 1 - exponent_usize % digits_per_separator
         } else {
