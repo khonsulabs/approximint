@@ -923,7 +923,29 @@
 <a href="#922" id="922">922</a>
 <a href="#923" id="923">923</a>
 <a href="#924" id="924">924</a>
-<a href="#925" id="925">925</a></pre></div><pre class="rust"><code><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">".crate-docs.md"</span>)]
+<a href="#925" id="925">925</a>
+<a href="#926" id="926">926</a>
+<a href="#927" id="927">927</a>
+<a href="#928" id="928">928</a>
+<a href="#929" id="929">929</a>
+<a href="#930" id="930">930</a>
+<a href="#931" id="931">931</a>
+<a href="#932" id="932">932</a>
+<a href="#933" id="933">933</a>
+<a href="#934" id="934">934</a>
+<a href="#935" id="935">935</a>
+<a href="#936" id="936">936</a>
+<a href="#937" id="937">937</a>
+<a href="#938" id="938">938</a>
+<a href="#939" id="939">939</a>
+<a href="#940" id="940">940</a>
+<a href="#941" id="941">941</a>
+<a href="#942" id="942">942</a>
+<a href="#943" id="943">943</a>
+<a href="#944" id="944">944</a>
+<a href="#945" id="945">945</a>
+<a href="#946" id="946">946</a>
+<a href="#947" id="947">947</a></pre></div><pre class="rust"><code><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">".crate-docs.md"</span>)]
 #![no_std]
 </span><span class="kw">use </span>core::fmt::{Display, Write};
 <span class="kw">use </span>core::ops::{Add, AddAssign, Mul, Neg, Sub, SubAssign};
@@ -938,7 +960,7 @@
 /// This type supports representing integers in a form of `coefficient *
 /// 10^exponent`. The coefficient has a range of `-999_999_999..=999_999_999`,
 /// and the maximum exponent is `u32::MAX`. This approach supports a range of
-/// `-9.999_999_99e4,294,967,295..=9.999_999_99e4,294,967,295` while retaining 9
+/// `-9.999_999_99e4_294_967_303..=9.999_999_99e4_294_967_303` while retaining 9
 /// digits of precision.
 </span><span class="attr">#[derive(Debug, Clone, Copy, Eq, PartialEq, PartialOrd, Ord, Default)]
 </span><span class="kw">pub struct </span>Approximint {
@@ -948,6 +970,14 @@
 
 <span class="kw">impl </span>Approximint {
     <span class="kw">const </span>COEFFICIENT_LIMIT: i32 = <span class="number">1_000_000_000</span>;
+    <span class="kw">pub const </span>MAX: <span class="self">Self </span>= <span class="self">Self </span>{
+        ten_power: u32::MAX,
+        coefficient: <span class="number">999_999_999</span>,
+    };
+    <span class="kw">pub const </span>MIN: <span class="self">Self </span>= <span class="self">Self </span>{
+        ten_power: u32::MAX,
+        coefficient: -<span class="number">999_999_999</span>,
+    };
     <span class="doccomment">/// A value representing 1.
     </span><span class="kw">pub const </span>ONE: <span class="self">Self </span>= <span class="self">Self </span>{
         ten_power: <span class="number">0</span>,
@@ -998,7 +1028,7 @@
                 <span class="self">self</span>.ten_power -= <span class="number">1</span>;
             }
         } <span class="kw">else if </span><span class="self">self</span>.coefficient &lt; <span class="number">0 </span>{
-            <span class="kw">while </span><span class="self">self</span>.ten_power &gt; <span class="number">0 </span>&amp;&amp; <span class="self">self</span>.coefficient &lt; -<span class="number">100_000_000 </span>{
+            <span class="kw">while </span><span class="self">self</span>.ten_power &gt; <span class="number">0 </span>&amp;&amp; <span class="self">self</span>.coefficient &gt; -<span class="number">100_000_000 </span>{
                 <span class="self">self</span>.coefficient <span class="kw-2">*</span>= <span class="number">10</span>;
                 <span class="self">self</span>.ten_power -= <span class="number">1</span>;
             }
@@ -1011,8 +1041,12 @@
         <span class="kw">if </span><span class="self">self</span>.coefficient &gt;= <span class="self">Self</span>::COEFFICIENT_LIMIT
             || <span class="self">self</span>.coefficient &lt;= -<span class="self">Self</span>::COEFFICIENT_LIMIT
         {
-            <span class="self">self</span>.ten_power += <span class="number">1</span>;
-            <span class="self">self</span>.coefficient /= <span class="number">10</span>;
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(next_power) = <span class="self">self</span>.ten_power.checked_add(<span class="number">1</span>) {
+                <span class="self">self</span>.ten_power = next_power;
+                <span class="self">self</span>.coefficient /= <span class="number">10</span>;
+            } <span class="kw">else </span>{
+                <span class="self">self</span>.coefficient = <span class="self">self</span>.coefficient.signum() * <span class="number">999_999_999</span>;
+            }
         }
         <span class="self">self
     </span>}
@@ -1124,12 +1158,22 @@
         <span class="kw">let </span><span class="kw-2">mut </span>coefficient = i64::from(<span class="self">self</span>.coefficient) * i64::from(rhs.coefficient);
         <span class="kw">let </span><span class="kw-2">mut </span>ten_power = <span class="self">self</span>.ten_power + rhs.ten_power;
         <span class="kw">while </span>coefficient &gt;= i64::from(<span class="self">Self</span>::COEFFICIENT_LIMIT) {
-            ten_power += <span class="number">1</span>;
-            coefficient /= <span class="number">10</span>;
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(next_power) = ten_power.checked_add(<span class="number">1</span>) {
+                ten_power = next_power;
+                coefficient /= <span class="number">10</span>;
+            } <span class="kw">else </span>{
+                coefficient = <span class="number">999_999_999</span>;
+                <span class="kw">break</span>;
+            }
         }
         <span class="kw">while </span>coefficient &lt;= i64::from(-<span class="self">Self</span>::COEFFICIENT_LIMIT) {
-            ten_power += <span class="number">1</span>;
-            coefficient /= <span class="number">10</span>;
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(next_power) = ten_power.checked_add(<span class="number">1</span>) {
+                ten_power = next_power;
+                coefficient /= <span class="number">10</span>;
+            } <span class="kw">else </span>{
+                coefficient = -<span class="number">999_999_999</span>;
+                <span class="kw">break</span>;
+            }
         }
         <span class="self">Self </span>{
             coefficient: coefficient <span class="kw">as </span>i32,
@@ -1271,7 +1315,7 @@
 <span class="attr">#[derive(Debug, Copy, Clone)]
 </span><span class="kw">struct </span>ScientificInfo {
     digits: DigitRing,
-    exponent: u32,
+    exponent: u64,
     negative: bool,
 }
 
@@ -1292,7 +1336,7 @@
             exponent += <span class="number">1</span>;
         }
 
-        <span class="kw">let </span>exponent = exponent - <span class="number">1 </span>+ num.ten_power;
+        <span class="kw">let </span>exponent = exponent - <span class="number">1 </span>+ u64::from(num.ten_power);
         <span class="self">Self </span>{
             digits,
             exponent,
@@ -1579,10 +1623,10 @@
         }
         <span class="self">self</span>.format_words(info.exponent, f, |f, exponent| {
             <span class="kw">let </span>digits_per_separator = usize::from(<span class="self">self</span>.decimal.digits_per_separator);
-            <span class="kw">let </span>separator_offset =
-                digits_per_separator - <span class="number">1 </span>- exponent <span class="kw">as </span>usize % digits_per_separator;
-            <span class="kw">for </span>(index, digit) <span class="kw">in </span>info.digits.iter().take(exponent <span class="kw">as </span>usize + <span class="number">2</span>).enumerate() {
-                <span class="kw">if </span>index == exponent <span class="kw">as </span>usize + <span class="number">1 </span>{
+            <span class="kw">let </span>exponent_usize = usize::try_from(exponent).expect(<span class="string">"exponent too large for usize"</span>);
+            <span class="kw">let </span>separator_offset = digits_per_separator - <span class="number">1 </span>- exponent_usize % digits_per_separator;
+            <span class="kw">for </span>(index, digit) <span class="kw">in </span>info.digits.iter().take(exponent_usize + <span class="number">2</span>).enumerate() {
+                <span class="kw">if </span>index == exponent_usize + <span class="number">1 </span>{
                     <span class="kw">if </span>digit == <span class="string">b'0' </span>{
                         <span class="kw">break</span>;
                     }
@@ -1598,9 +1642,9 @@
 
     <span class="kw">fn </span>format_words(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        exponent: u32,
+        exponent: u64,
         f: <span class="kw-2">&amp;mut </span>core::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;,
-        format_exponent: <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;mut </span>core::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;, u32) -&gt; core::fmt::Result,
+        format_exponent: <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;mut </span>core::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;, u64) -&gt; core::fmt::Result,
     ) -&gt; core::fmt::Result {
         <span class="comment">// info treats the leading digit as significant, but for the purpose of
         // this function we need to treat exponent as a count of digits.
@@ -1608,12 +1652,12 @@
             </span>.words
             .windows(<span class="number">2</span>)
             .skip_while(|words| words[<span class="number">0</span>].<span class="number">0 </span>&lt; <span class="self">self</span>.decimal_before)
-            .find(|words| words[<span class="number">0</span>].<span class="number">0 </span>&lt;= exponent &amp;&amp; words[<span class="number">1</span>].<span class="number">0 </span>&gt; exponent)
+            .find(|words| u64::from(words[<span class="number">0</span>].<span class="number">0</span>) &lt;= exponent &amp;&amp; u64::from(words[<span class="number">1</span>].<span class="number">0</span>) &gt; exponent)
             .map_or_else(
                 || <span class="self">self</span>.words.last().expect(<span class="string">"at least one word"</span>),
                 |words| <span class="kw-2">&amp;</span>words[<span class="number">0</span>],
             );
-        <span class="kw">let </span><span class="prelude-val">Some</span>(exponent) = exponent.checked_sub(word.<span class="number">0</span>) <span class="kw">else </span>{
+        <span class="kw">let </span><span class="prelude-val">Some</span>(exponent) = exponent.checked_sub(u64::from(word.<span class="number">0</span>)) <span class="kw">else </span>{
             <span class="kw">return </span>format_exponent(f, exponent);
         };
 
@@ -1621,7 +1665,7 @@
             <span class="macro">todo!</span>(<span class="string">"round"</span>);
         }
 
-        <span class="kw">if </span>exponent &lt; <span class="self">self</span>.decimal_before {
+        <span class="kw">if </span>exponent &lt; u64::from(<span class="self">self</span>.decimal_before) {
             format_exponent(f, exponent)<span class="question-mark">?</span>;
         } <span class="kw">else </span>{
             <span class="self">self</span>.format_words(exponent, f, format_exponent)<span class="question-mark">?</span>;
@@ -1698,7 +1742,7 @@
         }
 
         <span class="kw">let </span>digits_per_separator = usize::from(<span class="self">self</span>.digits_per_separator);
-        <span class="kw">let </span>exponent_usize = info.exponent <span class="kw">as </span>usize;
+        <span class="kw">let </span>exponent_usize = usize::try_from(info.exponent).expect(<span class="string">"exponent too large for usize"</span>);
         <span class="kw">let </span>separator_offset = <span class="kw">if </span>digits_per_separator &gt; <span class="number">0 </span>{
             digits_per_separator - <span class="number">1 </span>- exponent_usize % digits_per_separator
         } <span class="kw">else </span>{
