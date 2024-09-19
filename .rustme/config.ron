@@ -31,24 +31,14 @@ Configuration(
     glossaries: [
         "https://github.com/khonsulabs/.github/raw/main/snippets/glossary.ron",
         {
-            // "msrv": "1.70",
+            "msrv": "1.81",
             "ref-name": (
                 default: "main",
-                release: "v0.4.0",
+                release: "v0.1.0",
             ),
             "docs": (
-                default: "https://cushy.rs/main/docs/cushy/",
-                release: "https://docs.rs/cushy",
-            ),
-            "widget": (
-                default: "https://cushy.rs/main/docs/cushy/widget/trait.Widget.html",
-                release: "https://docs.rs/cushy/*/cushy/widget/trait.Widget.html",
-                for_docs: "crate::widget::Widget",
-            ),
-            "widgets": (
-                default: "https://cushy.rs/main/docs/cushy/widgets/index.html",
-                release: "https://docs.rs/cushy/*/cushy/widgets/index.html",
-                for_docs: "mod@crate::widgets",
+                default: "https://khonsulabs.github.io/approximint/main/approximint/",
+                release: "https://docs.rs/approximint/",
             ),
         },
     ],
