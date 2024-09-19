@@ -1,0 +1,24 @@
+[package]
+name = "approximint"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.81.0"
+description = "A large integer library using an approximate representation inspired by scientific notation"
+repository = "https://github.com/khonsulabs/approximint"
+license = "MIT OR Apache-2.0"
+keywords = ["decimal", "incremental", "math"]
+categories = ["mathematics", "game-development"]
+readme = "./README.md"
+
+[features]
+default = ["std"]
+std = []
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
