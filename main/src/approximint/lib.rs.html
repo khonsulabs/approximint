@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/lib.rs`."><title>lib.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-405f8b29f52305f8.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="approximint" data-themes="" data-resource-suffix="" data-rustdoc-version="1.83.0-nightly (f79a912d9 2024-09-18)" data-channel="nightly" data-search-js="search-0cfde64e8ad3a7fe.js" data-settings-js="settings-7e3bb6c46e92e77c.js" ><script src="../../static.files/storage-29b1d5a9048d38fe.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-14659ec02b58af51.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-40f72c9259523cb3.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/lib.rs`."><title>lib.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-405f8b29f52305f8.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="approximint" data-themes="" data-resource-suffix="" data-rustdoc-version="1.83.0-nightly (506f22b46 2024-09-19)" data-channel="nightly" data-search-js="search-0cfde64e8ad3a7fe.js" data-settings-js="settings-7e3bb6c46e92e77c.js" ><script src="../../static.files/storage-29b1d5a9048d38fe.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-59a36e46ca746814.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-40f72c9259523cb3.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers">
 <a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
@@ -945,9 +945,35 @@
 <a href="#944" id="944">944</a>
 <a href="#945" id="945">945</a>
 <a href="#946" id="946">946</a>
-<a href="#947" id="947">947</a></pre></div><pre class="rust"><code><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">".crate-docs.md"</span>)]
+<a href="#947" id="947">947</a>
+<a href="#948" id="948">948</a>
+<a href="#949" id="949">949</a>
+<a href="#950" id="950">950</a>
+<a href="#951" id="951">951</a>
+<a href="#952" id="952">952</a>
+<a href="#953" id="953">953</a>
+<a href="#954" id="954">954</a>
+<a href="#955" id="955">955</a>
+<a href="#956" id="956">956</a>
+<a href="#957" id="957">957</a>
+<a href="#958" id="958">958</a>
+<a href="#959" id="959">959</a>
+<a href="#960" id="960">960</a>
+<a href="#961" id="961">961</a>
+<a href="#962" id="962">962</a>
+<a href="#963" id="963">963</a>
+<a href="#964" id="964">964</a>
+<a href="#965" id="965">965</a>
+<a href="#966" id="966">966</a>
+<a href="#967" id="967">967</a>
+<a href="#968" id="968">968</a>
+<a href="#969" id="969">969</a>
+<a href="#970" id="970">970</a>
+<a href="#971" id="971">971</a>
+<a href="#972" id="972">972</a>
+<a href="#973" id="973">973</a></pre></div><pre class="rust"><code><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">".crate-docs.md"</span>)]
 #![no_std]
-</span><span class="kw">use </span>core::fmt::{Display, Write};
+</span><span class="kw">use </span>core::fmt::{Debug, Display, Write};
 <span class="kw">use </span>core::ops::{Add, AddAssign, Mul, Neg, Sub, SubAssign};
 <span class="kw">use </span>core::slice;
 
@@ -962,7 +988,7 @@
 /// and the maximum exponent is `u32::MAX`. This approach supports a range of
 /// `-9.999_999_99e4_294_967_303..=9.999_999_99e4_294_967_303` while retaining 9
 /// digits of precision.
-</span><span class="attr">#[derive(Debug, Clone, Copy, Eq, PartialEq, PartialOrd, Ord, Default)]
+</span><span class="attr">#[derive(Clone, Copy, Eq, PartialEq, PartialOrd, Ord, Default)]
 </span><span class="kw">pub struct </span>Approximint {
     ten_power: u32,
     coefficient: i32,
@@ -1237,9 +1263,25 @@
 <span class="kw">impl </span>Display <span class="kw">for </span>Approximint {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>core::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; core::fmt::Result {
         <span class="kw">if </span><span class="self">self</span>.ten_power &gt; <span class="number">0 </span>{
-            ScientificFormatter::from(<span class="kw-2">*</span><span class="self">self</span>).fmt(f)
+            Display::fmt(<span class="kw-2">&amp;</span>ScientificFormatter::from(<span class="kw-2">*</span><span class="self">self</span>), f)
         } <span class="kw">else </span>{
-            DecimalFormatter::from(<span class="kw-2">*</span><span class="self">self</span>).fmt(f)
+            Display::fmt(<span class="kw-2">&amp;</span>DecimalFormatter::from(<span class="kw-2">*</span><span class="self">self</span>), f)
+        }
+    }
+}
+
+<span class="kw">impl </span>Debug <span class="kw">for </span>Approximint {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>core::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; core::fmt::Result {
+        <span class="kw">if </span><span class="self">self</span>.ten_power &gt; <span class="number">0 </span>{
+            <span class="comment">// For Debug, always show all digits of precision.
+            </span>Display::fmt(
+                <span class="kw-2">&amp;</span>ScientificFormatter::from(<span class="kw-2">*</span><span class="self">self</span>)
+                    .significant_digits(<span class="number">9</span>)
+                    .truncate_zeroes(),
+                f,
+            )
+        } <span class="kw">else </span>{
+            Display::fmt(<span class="kw-2">&amp;</span>DecimalFormatter::from(<span class="kw-2">*</span><span class="self">self</span>), f)
         }
     }
 }
@@ -1274,7 +1316,17 @@
     <span class="doccomment">/// Sets the number of significant digits to display.
     </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>significant_digits(<span class="kw-2">mut </span><span class="self">self</span>, digits: u8) -&gt; <span class="self">Self </span>{
-        <span class="macro">assert!</span>(digits &lt;= <span class="number">8</span>, <span class="string">"significant digits must be less than 9"</span>);
+        <span class="kw">if </span><span class="self">self</span>.round {
+            <span class="macro">assert!</span>(
+                digits &lt;= <span class="number">8</span>,
+                <span class="string">"significant digits must be less than 9 when rounding"
+            </span>);
+        } <span class="kw">else </span>{
+            <span class="macro">assert!</span>(
+                digits &lt;= <span class="number">9</span>,
+                <span class="string">"significant digits must be less than or equal to 9"
+            </span>);
+        }
         <span class="self">self</span>.settings.significant_digits = digits;
         <span class="self">self
     </span>}
@@ -1730,7 +1782,7 @@
         <span class="kw">if </span><span class="self">self</span>.num.ten_power == <span class="number">0 </span>&amp;&amp; <span class="self">self</span>.num.coefficient == <span class="number">0 </span>{
             <span class="kw">return </span>f.write_str(<span class="string">"0"</span>);
         } <span class="kw">else if </span><span class="self">self</span>.num.ten_power &gt;= <span class="self">self</span>.scientific_after {
-            <span class="kw">return </span>ScientificFormatter::from(<span class="self">self</span>.num).fmt(f);
+            <span class="kw">return </span>Display::fmt(<span class="kw-2">&amp;</span>ScientificFormatter::from(<span class="self">self</span>.num), f);
         }
 
         <span class="comment">// To avoid allocations, we need to figure out how many total digits we
