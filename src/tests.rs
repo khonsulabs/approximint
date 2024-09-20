@@ -1,3 +1,4 @@
+use std::format;
 use std::string::ToString;
 
 use crate::{Approximint, DecimalFormatter, ScientificFormatter, WordFormatter};
@@ -198,4 +199,19 @@ fn limits() {
     assert_eq!(Approximint::MIN + Approximint::MIN, Approximint::MIN);
     assert_eq!(Approximint::MAX + Approximint::MAX, Approximint::MAX);
     assert_eq!(Approximint::MAX - Approximint::MIN, Approximint::MAX);
+}
+
+#[test]
+fn debug_output() {
+    assert_eq!(format!("{:?}", Approximint::ONE), "1");
+    assert_eq!(
+        format!("{:?}", Approximint::new(999_999_999)),
+        "999,999,999"
+    );
+    assert_eq!(format!("{:?}", Approximint::new(1_000_000_000)), "1e9");
+    assert_eq!(format!("{:?}", Approximint::new(1_100_000_000)), "1.1e9");
+    assert_eq!(
+        format!("{:?}", Approximint::new(1_234_567_891)),
+        "1.23456789e9"
+    );
 }

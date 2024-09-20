@@ -1,6 +1,6 @@
 #![doc = include_str!(".crate-docs.md")]
 #![no_std]
-use core::fmt::{Display, Write};
+use core::fmt::{Debug, Display, Write};
 use core::ops::{Add, AddAssign, Mul, Neg, Sub, SubAssign};
 use core::slice;
 
@@ -15,7 +15,7 @@ extern crate std;
 /// and the maximum exponent is `u32::MAX`. This approach supports a range of
 /// `-9.999_999_99e4_294_967_303..=9.999_999_99e4_294_967_303` while retaining 9
 /// digits of precision.
-#[derive(Debug, Clone, Copy, Eq, PartialEq, PartialOrd, Ord, Default)]
+#[derive(Clone, Copy, Eq, PartialEq, PartialOrd, Ord, Default)]
 pub struct Approximint {
     ten_power: u32,
     coefficient: i32,
@@ -290,9 +290,25 @@ impl From<i32> for Approximint {
 impl Display for Approximint {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         if self.ten_power > 0 {
-            ScientificFormatter::from(*self).fmt(f)
+            Display::fmt(&ScientificFormatter::from(*self), f)
         } else {
-            DecimalFormatter::from(*self).fmt(f)
+            Display::fmt(&DecimalFormatter::from(*self), f)
+        }
+    }
+}
+
+impl Debug for Approximint {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        if self.ten_power > 0 {
+            // For Debug, always show all digits of precision.
+            Display::fmt(
+                &ScientificFormatter::from(*self)
+                    .significant_digits(9)
+                    .truncate_zeroes(),
+                f,
+            )
+        } else {
+            Display::fmt(&DecimalFormatter::from(*self), f)
         }
     }
 }
@@ -327,7 +343,17 @@ impl ScientificFormatter {
     /// Sets the number of significant digits to display.
     #[inline]
     pub fn significant_digits(mut self, digits: u8) -> Self {
-        assert!(digits <= 8, "significant digits must be less than 9");
+        if self.round {
+            assert!(
+                digits <= 8,
+                "significant digits must be less than 9 when rounding"
+            );
+        } else {
+            assert!(
+                digits <= 9,
+                "significant digits must be less than or equal to 9"
+            );
+        }
         self.settings.significant_digits = digits;
         self
     }
@@ -783,7 +809,7 @@ impl Display for DecimalFormatter {
         if self.num.ten_power == 0 && self.num.coefficient == 0 {
             return f.write_str("0");
         } else if self.num.ten_power >= self.scientific_after {
-            return ScientificFormatter::from(self.num).fmt(f);
+            return Display::fmt(&ScientificFormatter::from(self.num), f);
         }
 
         // To avoid allocations, we need to figure out how many total digits we
