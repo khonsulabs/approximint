@@ -215,3 +215,13 @@ fn debug_output() {
         "1.23456789e9"
     );
 }
+
+#[test]
+fn powers() {
+    assert_eq!(Approximint::one_e(3).powi(2), Approximint::one_e(9));
+    assert_eq!(Approximint::new(2).powi(20000), Approximint::MAX);
+    assert_eq!(
+        (Approximint::one_e(2) * 2).powi(8),
+        Approximint::new(256) * Approximint::one_e(256)
+    );
+}

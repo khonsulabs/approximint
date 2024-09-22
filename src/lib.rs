@@ -23,10 +23,12 @@ pub struct Approximint {
 
 impl Approximint {
     const COEFFICIENT_LIMIT: i32 = 1_000_000_000;
+    /// The maximum value representable by an Approximint.
     pub const MAX: Self = Self {
         ten_power: u32::MAX,
         coefficient: 999_999_999,
     };
+    /// The minimum value representable by an Approximint.
     pub const MIN: Self = Self {
         ten_power: u32::MAX,
         coefficient: -999_999_999,
@@ -145,6 +147,56 @@ impl Approximint {
     pub fn as_decimal(self) -> DecimalFormatter {
         DecimalFormatter::from(self)
     }
+
+    /// Returns the result of raising `self` to the `exponent` power.
+    ///
+    /// Rather than aiming for accuracy, this function only attempts two
+    /// approaches to avoiding overflows when raising to large powers. If an
+    /// overflow occurs during raising the coefficient to the exponent power,
+    /// the entire calcualtion will overflow rather than an invalid result being
+    /// returned.
+    ///
+    /// Due to these limitations, this function should be only used to raise to
+    /// powers that overflows are unlikely to occur.
+    #[must_use]
+    #[expect(clippy::cast_possible_truncation)]
+    pub fn powi(self, exponent: u32) -> Self {
+        if self.coefficient == 0 {
+            Self::ZERO
+        } else if exponent > 0 {
+            let this = self.maximize_ten_power();
+            let ten_power = this.ten_power.checked_pow(exponent);
+            let coefficient = i128::from(this.coefficient)
+                .checked_pow(exponent)
+                .or_else(|| {
+                    let raised = f64::from(this.coefficient)
+                        .powi(i32::try_from(exponent).unwrap_or(i32::MAX))
+                        as i128;
+                    (raised > i128::MIN && raised < i128::MAX).then_some(raised)
+                });
+            let (Some(coefficient), Some(ten_power)) = (coefficient, ten_power) else {
+                return Self {
+                    coefficient: this.coefficient.signum() * 999_999_999,
+                    ten_power: u32::MAX,
+                };
+            };
+            let mut normalized = coefficient.approximate();
+            normalized.ten_power = normalized.ten_power.saturating_add(ten_power);
+            normalized.normalize_underflow()
+        } else {
+            Self::ONE
+        }
+    }
+
+    const fn maximize_ten_power(mut self) -> Self {
+        if self.coefficient != 0 {
+            while self.coefficient % 10 == 0 {
+                self.ten_power += 1;
+                self.coefficient /= 10;
+            }
+        }
+        self
+    }
 }
 
 impl Neg for Approximint {
@@ -173,11 +225,26 @@ impl Add for Approximint {
         .normalized()
     }
 }
+impl Add<i32> for Approximint {
+    type Output = Self;
+
+    #[inline]
+    fn add(self, rhs: i32) -> Self::Output {
+        self + Self::new(rhs)
+    }
+}
 
 impl AddAssign for Approximint {
     #[inline]
     fn add_assign(&mut self, rhs: Self) {
         *self = *self + rhs;
+    }
+}
+
+impl AddAssign<i32> for Approximint {
+    #[inline]
+    fn add_assign(&mut self, rhs: i32) {
+        *self += Self::new(rhs);
     }
 }
 
@@ -195,10 +262,26 @@ impl Sub for Approximint {
     }
 }
 
+impl Sub<i32> for Approximint {
+    type Output = Self;
+
+    #[inline]
+    fn sub(self, rhs: i32) -> Self::Output {
+        self - Self::new(rhs)
+    }
+}
+
 impl SubAssign for Approximint {
     #[inline]
     fn sub_assign(&mut self, rhs: Self) {
         *self = *self - rhs;
+    }
+}
+
+impl SubAssign<i32> for Approximint {
+    #[inline]
+    fn sub_assign(&mut self, rhs: i32) {
+        *self -= Self::new(rhs);
     }
 }
 
@@ -232,6 +315,15 @@ impl Mul for Approximint {
             coefficient: coefficient as i32,
             ten_power,
         }
+    }
+}
+
+impl Mul<i32> for Approximint {
+    type Output = Self;
+
+    #[inline]
+    fn mul(self, rhs: i32) -> Self::Output {
+        self * Self::new(rhs)
     }
 }
 
@@ -757,7 +849,11 @@ impl<'a> WordFormatter<'a> {
 
 impl Display for WordFormatter<'_> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        self.format_info(ScientificInfo::new(self.decimal.num), f)
+        if self.decimal.num == Approximint::ZERO {
+            f.write_str("0")
+        } else {
+            self.format_info(ScientificInfo::new(self.decimal.num), f)
+        }
     }
 }
 
@@ -937,6 +1033,55 @@ impl Approximate for u128 {
     }
 }
 
+impl Approximate for i32 {
+    #[inline]
+    fn approximate(self) -> Approximint {
+        Approximint::new(self)
+    }
+}
+
+impl Approximate for i64 {
+    #[inline]
+    #[expect(clippy::cast_possible_truncation)]
+    fn approximate(mut self) -> Approximint {
+        let mut ten_power = 0;
+        while self >= i64::from(Approximint::COEFFICIENT_LIMIT) {
+            ten_power += 1;
+            self /= 10;
+        }
+        while self <= i64::from(-Approximint::COEFFICIENT_LIMIT) {
+            ten_power += 1;
+            self /= 10;
+        }
+
+        Approximint {
+            coefficient: self as i32,
+            ten_power,
+        }
+    }
+}
+
+impl Approximate for i128 {
+    #[inline]
+    #[expect(clippy::cast_possible_truncation)]
+    fn approximate(mut self) -> Approximint {
+        let mut ten_power = 0;
+        while self >= i128::from(Approximint::COEFFICIENT_LIMIT) {
+            ten_power += 1;
+            self /= 10;
+        }
+        while self <= i128::from(-Approximint::COEFFICIENT_LIMIT) {
+            ten_power += 1;
+            self /= 10;
+        }
+
+        Approximint {
+            coefficient: self as i32,
+            ten_power,
+        }
+    }
+}
+
 #[cfg(feature = "std")]
 impl Approximate for f64 {
     #[inline]
@@ -958,6 +1103,14 @@ impl Approximate for f64 {
             ten_power,
         }
         .normalize_overflow()
+    }
+}
+
+#[cfg(feature = "std")]
+impl From<Approximint> for f64 {
+    fn from(value: Approximint) -> Self {
+        let coefficient = f64::from(value.coefficient) / 1_000_000_000.0;
+        coefficient * 10f64.powi(i32::try_from(value.ten_power).unwrap_or(i32::MAX))
     }
 }
 
