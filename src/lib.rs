@@ -792,30 +792,49 @@ impl<'a> WordFormatter<'a> {
         if info.negative {
             f.write_char('-')?;
         }
-        self.format_words(info.exponent, f, |f, exponent| {
-            let digits_per_separator = usize::from(self.decimal.digits_per_separator);
-            let exponent_usize = usize::try_from(exponent).expect("exponent too large for usize");
-            let separator_offset = digits_per_separator - 1 - exponent_usize % digits_per_separator;
-            for (index, digit) in info.digits.iter().take(exponent_usize + 2).enumerate() {
-                if index == exponent_usize + 1 {
-                    if digit == b'0' {
-                        break;
+        if info.exponent < u64::from(self.decimal_before) {
+            return Display::fmt(&self.decimal, f);
+        }
+
+        let significant_digits = u16::from(self.decimal.digits_per_separator) + 1;
+        self.format_words(
+            info.exponent,
+            significant_digits,
+            f,
+            |f, exponent, significant_digits| {
+                let digits_per_separator = usize::from(self.decimal.digits_per_separator);
+                let exponent_usize =
+                    usize::try_from(exponent).expect("exponent too large for usize");
+                let separator_offset =
+                    digits_per_separator - 1 - exponent_usize % digits_per_separator;
+                for (index, digit) in info
+                    .digits
+                    .iter()
+                    .take(exponent_usize + 4)
+                    .enumerate()
+                    .take(usize::from(significant_digits))
+                {
+                    if index == exponent_usize + 1 {
+                        if digit == b'0' {
+                            break;
+                        }
+                        f.write_char('.')?;
+                    } else if index > 0 && (index + separator_offset) % digits_per_separator == 0 {
+                        f.write_char(self.decimal.separator)?;
                     }
-                    f.write_char('.')?;
-                } else if index > 0 && (index + separator_offset) % digits_per_separator == 0 {
-                    f.write_char(self.decimal.separator)?;
+                    f.write_char(char::from(digit))?;
                 }
-                f.write_char(char::from(digit))?;
-            }
-            Ok(())
-        })
+                Ok(())
+            },
+        )
     }
 
     fn format_words(
         &self,
         exponent: u64,
+        significant_digits: u16,
         f: &mut core::fmt::Formatter<'_>,
-        format_exponent: impl FnOnce(&mut core::fmt::Formatter<'_>, u64) -> core::fmt::Result,
+        format_exponent: impl FnOnce(&mut core::fmt::Formatter<'_>, u64, u16) -> core::fmt::Result,
     ) -> core::fmt::Result {
         // info treats the leading digit as significant, but for the purpose of
         // this function we need to treat exponent as a count of digits.
@@ -829,17 +848,16 @@ impl<'a> WordFormatter<'a> {
                 |words| &words[0],
             );
         let Some(exponent) = exponent.checked_sub(u64::from(word.0)) else {
-            return format_exponent(f, exponent);
+            return format_exponent(f, exponent, significant_digits);
         };
 
-        if self.round {
-            todo!("round");
-        }
-
-        if exponent < u64::from(self.decimal_before) {
-            format_exponent(f, exponent)?;
+        if exponent < u64::from(significant_digits) {
+            format_exponent(f, exponent, significant_digits)?;
         } else {
-            self.format_words(exponent, f, format_exponent)?;
+            if self.round {
+                todo!("round");
+            }
+            self.format_words(exponent, significant_digits, f, format_exponent)?;
         }
 
         f.write_char(' ')?;
