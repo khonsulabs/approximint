@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/lib.rs`."><title>lib.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9d5ec5f3536319c6.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="approximint" data-themes="" data-resource-suffix="" data-rustdoc-version="1.83.0-nightly (1d68e6dd1 2024-09-21)" data-channel="nightly" data-search-js="search-0cfde64e8ad3a7fe.js" data-settings-js="settings-7e3bb6c46e92e77c.js" ><script src="../../static.files/storage-29b1d5a9048d38fe.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-59a36e46ca746814.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-40f72c9259523cb3.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/lib.rs`."><title>lib.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-42fa08075bb476ff.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="approximint" data-themes="" data-resource-suffix="" data-rustdoc-version="1.83.0-nightly (363ae4188 2024-09-24)" data-channel="nightly" data-search-js="search-e056c65ede92db13.js" data-settings-js="settings-805db61a62df4bd2.js" ><script src="../../static.files/storage-1d39b6787ed640ff.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-54bc299d2a5e4e43.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-0111fcff984fae8f.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">approximint/</div>lib.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers">
 <a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
@@ -1124,7 +1124,25 @@
 <a href="#1123" id="1123">1123</a>
 <a href="#1124" id="1124">1124</a>
 <a href="#1125" id="1125">1125</a>
-<a href="#1126" id="1126">1126</a></pre></div><pre class="rust"><code><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">".crate-docs.md"</span>)]
+<a href="#1126" id="1126">1126</a>
+<a href="#1127" id="1127">1127</a>
+<a href="#1128" id="1128">1128</a>
+<a href="#1129" id="1129">1129</a>
+<a href="#1130" id="1130">1130</a>
+<a href="#1131" id="1131">1131</a>
+<a href="#1132" id="1132">1132</a>
+<a href="#1133" id="1133">1133</a>
+<a href="#1134" id="1134">1134</a>
+<a href="#1135" id="1135">1135</a>
+<a href="#1136" id="1136">1136</a>
+<a href="#1137" id="1137">1137</a>
+<a href="#1138" id="1138">1138</a>
+<a href="#1139" id="1139">1139</a>
+<a href="#1140" id="1140">1140</a>
+<a href="#1141" id="1141">1141</a>
+<a href="#1142" id="1142">1142</a>
+<a href="#1143" id="1143">1143</a>
+<a href="#1144" id="1144">1144</a></pre></div><pre class="rust"><code><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">".crate-docs.md"</span>)]
 #![no_std]
 </span><span class="kw">use </span>core::fmt::{Debug, Display, Write};
 <span class="kw">use </span>core::ops::{Add, AddAssign, Mul, Neg, Sub, SubAssign};
@@ -1918,30 +1936,49 @@
         <span class="kw">if </span>info.negative {
             f.write_char(<span class="string">'-'</span>)<span class="question-mark">?</span>;
         }
-        <span class="self">self</span>.format_words(info.exponent, f, |f, exponent| {
-            <span class="kw">let </span>digits_per_separator = usize::from(<span class="self">self</span>.decimal.digits_per_separator);
-            <span class="kw">let </span>exponent_usize = usize::try_from(exponent).expect(<span class="string">"exponent too large for usize"</span>);
-            <span class="kw">let </span>separator_offset = digits_per_separator - <span class="number">1 </span>- exponent_usize % digits_per_separator;
-            <span class="kw">for </span>(index, digit) <span class="kw">in </span>info.digits.iter().take(exponent_usize + <span class="number">2</span>).enumerate() {
-                <span class="kw">if </span>index == exponent_usize + <span class="number">1 </span>{
-                    <span class="kw">if </span>digit == <span class="string">b'0' </span>{
-                        <span class="kw">break</span>;
+        <span class="kw">if </span>info.exponent &lt; u64::from(<span class="self">self</span>.decimal_before) {
+            <span class="kw">return </span>Display::fmt(<span class="kw-2">&amp;</span><span class="self">self</span>.decimal, f);
+        }
+
+        <span class="kw">let </span>significant_digits = u16::from(<span class="self">self</span>.decimal.digits_per_separator) + <span class="number">1</span>;
+        <span class="self">self</span>.format_words(
+            info.exponent,
+            significant_digits,
+            f,
+            |f, exponent, significant_digits| {
+                <span class="kw">let </span>digits_per_separator = usize::from(<span class="self">self</span>.decimal.digits_per_separator);
+                <span class="kw">let </span>exponent_usize =
+                    usize::try_from(exponent).expect(<span class="string">"exponent too large for usize"</span>);
+                <span class="kw">let </span>separator_offset =
+                    digits_per_separator - <span class="number">1 </span>- exponent_usize % digits_per_separator;
+                <span class="kw">for </span>(index, digit) <span class="kw">in </span>info
+                    .digits
+                    .iter()
+                    .take(exponent_usize + <span class="number">4</span>)
+                    .enumerate()
+                    .take(usize::from(significant_digits))
+                {
+                    <span class="kw">if </span>index == exponent_usize + <span class="number">1 </span>{
+                        <span class="kw">if </span>digit == <span class="string">b'0' </span>{
+                            <span class="kw">break</span>;
+                        }
+                        f.write_char(<span class="string">'.'</span>)<span class="question-mark">?</span>;
+                    } <span class="kw">else if </span>index &gt; <span class="number">0 </span>&amp;&amp; (index + separator_offset) % digits_per_separator == <span class="number">0 </span>{
+                        f.write_char(<span class="self">self</span>.decimal.separator)<span class="question-mark">?</span>;
                     }
-                    f.write_char(<span class="string">'.'</span>)<span class="question-mark">?</span>;
-                } <span class="kw">else if </span>index &gt; <span class="number">0 </span>&amp;&amp; (index + separator_offset) % digits_per_separator == <span class="number">0 </span>{
-                    f.write_char(<span class="self">self</span>.decimal.separator)<span class="question-mark">?</span>;
+                    f.write_char(char::from(digit))<span class="question-mark">?</span>;
                 }
-                f.write_char(char::from(digit))<span class="question-mark">?</span>;
-            }
-            <span class="prelude-val">Ok</span>(())
-        })
+                <span class="prelude-val">Ok</span>(())
+            },
+        )
     }
 
     <span class="kw">fn </span>format_words(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         exponent: u64,
+        significant_digits: u16,
         f: <span class="kw-2">&amp;mut </span>core::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;,
-        format_exponent: <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;mut </span>core::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;, u64) -&gt; core::fmt::Result,
+        format_exponent: <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;mut </span>core::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;, u64, u16) -&gt; core::fmt::Result,
     ) -&gt; core::fmt::Result {
         <span class="comment">// info treats the leading digit as significant, but for the purpose of
         // this function we need to treat exponent as a count of digits.
@@ -1955,17 +1992,16 @@
                 |words| <span class="kw-2">&amp;</span>words[<span class="number">0</span>],
             );
         <span class="kw">let </span><span class="prelude-val">Some</span>(exponent) = exponent.checked_sub(u64::from(word.<span class="number">0</span>)) <span class="kw">else </span>{
-            <span class="kw">return </span>format_exponent(f, exponent);
+            <span class="kw">return </span>format_exponent(f, exponent, significant_digits);
         };
 
-        <span class="kw">if </span><span class="self">self</span>.round {
-            <span class="macro">todo!</span>(<span class="string">"round"</span>);
-        }
-
-        <span class="kw">if </span>exponent &lt; u64::from(<span class="self">self</span>.decimal_before) {
-            format_exponent(f, exponent)<span class="question-mark">?</span>;
+        <span class="kw">if </span>exponent &lt; u64::from(significant_digits) {
+            format_exponent(f, exponent, significant_digits)<span class="question-mark">?</span>;
         } <span class="kw">else </span>{
-            <span class="self">self</span>.format_words(exponent, f, format_exponent)<span class="question-mark">?</span>;
+            <span class="kw">if </span><span class="self">self</span>.round {
+                <span class="macro">todo!</span>(<span class="string">"round"</span>);
+            }
+            <span class="self">self</span>.format_words(exponent, significant_digits, f, format_exponent)<span class="question-mark">?</span>;
         }
 
         f.write_char(<span class="string">' '</span>)<span class="question-mark">?</span>;
